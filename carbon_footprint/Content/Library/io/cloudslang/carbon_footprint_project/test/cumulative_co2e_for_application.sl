@@ -112,5 +112,5 @@ extensions:
     results:
       SUCCESS:
         17a91132-8aeb-7c16-2480-f759e952a83d:
-          x: 680
+          x: 640
           'y': 360
