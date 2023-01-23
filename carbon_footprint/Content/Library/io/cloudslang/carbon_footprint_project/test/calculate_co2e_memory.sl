@@ -60,6 +60,9 @@ flow:
 extensions:
   graph:
     steps:
+      climatiq_io_get_memory:
+        x: 80
+        'y': 80
       json_path_extract_co2e:
         x: 280
         'y': 80
@@ -67,9 +70,6 @@ extensions:
           bc1c16a8-9698-c49e-f025-5b5febbe9128:
             targetId: 9cf1a507-2d60-db49-5d3c-a6c78597df86
             port: SUCCESS
-      climatiq_io_get_memory:
-        x: 80
-        'y': 80
     results:
       SUCCESS:
         9cf1a507-2d60-db49-5d3c-a6c78597df86:

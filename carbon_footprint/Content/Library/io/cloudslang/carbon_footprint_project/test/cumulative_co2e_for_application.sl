@@ -17,13 +17,13 @@ flow:
   name: cumulative_co2e_for_application
   inputs:
     - cpu_count: '32'
-    - cpu_load: '88'
+    - cpu_load: '75'
     - memory: '128'
     - storage: '3000'
     - storage_type: ssd
     - data_unit: GB
-    - provider: azure
-    - region: uk_west
+    - provider: aws
+    - region: eu_west_1
   workflow:
     - calculate_co2e_cpu:
         do:
