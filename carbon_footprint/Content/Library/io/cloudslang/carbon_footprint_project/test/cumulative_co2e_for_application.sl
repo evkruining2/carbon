@@ -6,8 +6,8 @@
 #! @input storage: Amount of storage used (in "data_units")
 #! @input storage_type: The type of storage that is used (ssd)
 #! @input data_unit: Units for data sources (MB, GB, etc)
-#! @input provider: Enter the compute provider (aws or azure)
-#! @input region: Enter the region of the compute recourses (eu_west_1, uk_west, etc)
+#! @input provider: Enter the compute provider (aws, azure or gcp)
+#! @input region: Enter the region of the compute recourses (eu_west_1, uk_west, europe_west_1, etc)
 #!
 #! @output application_co2e: The total co2e of the application
 #!!#
@@ -22,8 +22,8 @@ flow:
     - storage: '3000'
     - storage_type: ssd
     - data_unit: GB
-    - provider: aws
-    - region: eu_west_1
+    - provider: gcp
+    - region: europe_west_1
   workflow:
     - calculate_co2e_cpu:
         do:
@@ -112,5 +112,5 @@ extensions:
     results:
       SUCCESS:
         17a91132-8aeb-7c16-2480-f759e952a83d:
-          x: 640
+          x: 680
           'y': 360
