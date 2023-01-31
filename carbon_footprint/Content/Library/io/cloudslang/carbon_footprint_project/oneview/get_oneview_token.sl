@@ -5,6 +5,7 @@ flow:
     - oneview_url: 'https://synergy.advantageinc.org/rest/login-sessions'
     - username: administrator
     - password:
+        default: 'MFS0ftware%'
         sensitive: true
     - trust_all_roots: 'true'
     - x_509_hostname_verifier: allow_all
@@ -56,4 +57,3 @@ extensions:
         f6fc9f69-79f4-9362-4fde-0e4846d2bd33:
           x: 391
           'y': 91
-
