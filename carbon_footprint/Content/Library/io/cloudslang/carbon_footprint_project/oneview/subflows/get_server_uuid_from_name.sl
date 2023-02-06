@@ -1,4 +1,4 @@
-namespace: io.cloudslang.carbon_footprint_project.oneview
+namespace: io.cloudslang.carbon_footprint_project.oneview.subflows
 flow:
   name: get_server_uuid_from_name
   inputs:
@@ -60,4 +60,3 @@ extensions:
         1599296f-7170-d20a-eb74-13f461594334:
           x: 400
           'y': 80
-

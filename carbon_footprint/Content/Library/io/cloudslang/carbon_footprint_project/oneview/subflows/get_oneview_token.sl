@@ -1,4 +1,4 @@
-namespace: io.cloudslang.carbon_footprint_project.oneview
+namespace: io.cloudslang.carbon_footprint_project.oneview.subflows
 flow:
   name: get_oneview_token
   inputs:

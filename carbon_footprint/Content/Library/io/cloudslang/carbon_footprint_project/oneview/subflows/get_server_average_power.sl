@@ -1,10 +1,14 @@
-namespace: io.cloudslang.carbon_footprint_project.oneview
+namespace: io.cloudslang.carbon_footprint_project.oneview.subflows
 flow:
   name: get_server_average_power
   inputs:
     - oneview_url: 'https://synergy.advantageinc.org'
-    - server_uuid
-    - token
+    - server_uuid:
+        default: '2323'
+        required: true
+    - token:
+        default: erer
+        required: true
   workflow:
     - http_client_get:
         do:
@@ -30,9 +34,9 @@ flow:
           - power_consumption: "${return_result.partition(',')[2].strip(']')}"
           - epoch: "${return_result.partition(',')[0].strip('[')}"
         navigate:
-          - SUCCESS: convert_epoch_time
+          - SUCCESS: convert_epoch_time_1
           - FAILURE: on_failure
-    - convert_epoch_time:
+    - convert_epoch_time_1:
         do:
           io.cloudslang.base.utils.convert_epoch_time:
             - epoch_time: '${epoch}'
@@ -52,16 +56,16 @@ extensions:
   graph:
     steps:
       http_client_get:
-        x: 80
-        'y': 120
+        x: 274
+        'y': 102
       get_latest_sample:
-        x: 80
-        'y': 320
-      convert_epoch_time:
-        x: 280
+        x: 270
+        'y': 311
+      convert_epoch_time_1:
+        x: 440
         'y': 320
         navigate:
-          a021f120-9c7e-9319-d639-8afc84cd0d74:
+          4896ea28-f26b-d493-7380-49f9283e3a95:
             targetId: 3f7b896c-acf5-b665-7590-37502c8985a6
             port: SUCCESS
     results:
