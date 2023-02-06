@@ -19,8 +19,10 @@ flow:
             - url: "${oneview_url+'/rest/server-hardware/'+server_uuid+'/utilization?fields=CpuUtilization&fields=CpuAverageFreq&'}"
             - trust_all_roots: 'true'
             - x_509_hostname_verifier: allow_all
-            - headers: "${'Auth: '+token}"
-            - content_type: application/json
+            - headers: |-
+                ${'''Content-Type: application/json
+                X-Api-Version: 4200
+                Auth: '''+token}
         publish:
           - json_result: '${return_result}'
         navigate:
@@ -49,3 +51,4 @@ extensions:
         3f7b896c-acf5-b665-7590-37502c8985a6:
           x: 450
           'y': 105
+
