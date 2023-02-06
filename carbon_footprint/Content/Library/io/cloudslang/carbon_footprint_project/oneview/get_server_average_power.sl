@@ -16,7 +16,7 @@ flow:
     - http_client_get:
         do:
           io.cloudslang.base.http.http_client_get:
-            - url: "${oneview_url+'/rest/server-hardware/'+server_uuid+'/utilization?fields=AveragePower&'}"
+            - url: "${oneview_url+'/rest/server-hardware/'+server_uuid+'/utilization?fields=AveragePower&view=native'}"
             - trust_all_roots: 'true'
             - x_509_hostname_verifier: allow_all
             - headers: "${'Auth: '+token}"
@@ -24,10 +24,21 @@ flow:
         publish:
           - json_result: '${return_result}'
         navigate:
+          - SUCCESS: get_latest_sample
+          - FAILURE: on_failure
+    - get_latest_sample:
+        do:
+          io.cloudslang.base.json.json_path_query:
+            - json_object: '${json_result}'
+            - json_path: '$.metricList..metricSamples[0]'
+        publish:
+          - power_consumption: "${return_result.partition(',')[2].strip(']')}"
+          - epoch: "${return_result.partition(',')[0].strip('[')}"
+        navigate:
           - SUCCESS: SUCCESS
           - FAILURE: on_failure
   outputs:
-    - cpu_utilization: '${json_result}'
+    - current_power_consumption: '${power_consumption}'
   results:
     - FAILURE
     - SUCCESS
@@ -39,9 +50,12 @@ extensions:
         'y': 100
       http_client_get:
         x: 274
-        'y': 101
+        'y': 102
+      get_latest_sample:
+        x: 270
+        'y': 311
         navigate:
-          795fc50d-7c1e-74b6-82fd-72dd0a08dea0:
+          9fba90c6-a3f0-2dd8-95e5-ae184a238e3e:
             targetId: 3f7b896c-acf5-b665-7590-37502c8985a6
             port: SUCCESS
     results:
@@ -49,3 +63,4 @@ extensions:
         3f7b896c-acf5-b665-7590-37502c8985a6:
           x: 450
           'y': 105
+
