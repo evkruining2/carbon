@@ -22,8 +22,10 @@ flow:
             - url: '${oneview_url}'
             - trust_all_roots: '${trust_all_roots}'
             - x_509_hostname_verifier: '${x_508_hostname_verfier}'
-            - headers: "${'Auth: '+token}"
-            - content_type: application/json
+            - headers: |-
+                ${'''Content-Type: application/json
+                X-Api-Version: 4200
+                Auth: '''+token}
         publish:
           - json_result: '${return_result}'
         navigate:
@@ -47,6 +49,12 @@ flow:
 extensions:
   graph:
     steps:
+      get_oneview_token:
+        x: 87
+        'y': 140
+      http_client_get:
+        x: 221
+        'y': 178
       json_path_query:
         x: 391
         'y': 142
@@ -54,14 +62,9 @@ extensions:
           bbd93363-4787-a0cb-df90-1d387be807de:
             targetId: dbb96715-3738-9373-038b-0ba448d948b8
             port: SUCCESS
-      http_client_get:
-        x: 221
-        'y': 178
-      get_oneview_token:
-        x: 87
-        'y': 140
     results:
       SUCCESS:
         dbb96715-3738-9373-038b-0ba448d948b8:
           x: 541
           'y': 171
+
