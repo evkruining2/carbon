@@ -1,27 +1,17 @@
 namespace: io.cloudslang.carbon_footprint_project.oneview
 flow:
-  name: get_server_uuids
+  name: get_server_average_power
   inputs:
-    - oneview_url: 'https://synergy.advantageinc.org/rest/server-hardware?start=0&count=-1'
-    - trust_all_roots: 'true'
-    - x_508_hostname_verfier: allow_all
-    - token:
-        required: false
+    - oneview_url: 'https://synergy.advantageinc.org'
+    - server_uuid
+    - token
   workflow:
-    - get_oneview_token:
-        do:
-          io.cloudslang.carbon_footprint_project.oneview.get_oneview_token: []
-        publish:
-          - token
-        navigate:
-          - FAILURE: on_failure
-          - SUCCESS: http_client_get
     - http_client_get:
         do:
           io.cloudslang.base.http.http_client_get:
-            - url: '${oneview_url}'
-            - trust_all_roots: '${trust_all_roots}'
-            - x_509_hostname_verifier: '${x_508_hostname_verfier}'
+            - url: "${oneview_url+'/rest/server-hardware/'+server_uuid+'/utilization?fields=AveragePower&view=native'}"
+            - trust_all_roots: 'true'
+            - x_509_hostname_verifier: allow_all
             - headers: |-
                 ${'''Content-Type: application/json
                 X-Api-Version: 4200
@@ -29,42 +19,53 @@ flow:
         publish:
           - json_result: '${return_result}'
         navigate:
-          - SUCCESS: json_path_query
+          - SUCCESS: get_latest_sample
           - FAILURE: on_failure
-    - json_path_query:
+    - get_latest_sample:
         do:
           io.cloudslang.base.json.json_path_query:
             - json_object: '${json_result}'
-            - json_path: $.members..uuid
+            - json_path: '$.metricList..metricSamples[0]'
         publish:
-          - server_uuids: "${return_result.strip('[').strip(']')}"
+          - power_consumption: "${return_result.partition(',')[2].strip(']')}"
+          - epoch: "${return_result.partition(',')[0].strip('[')}"
+        navigate:
+          - SUCCESS: convert_epoch_time
+          - FAILURE: on_failure
+    - convert_epoch_time:
+        do:
+          io.cloudslang.base.utils.convert_epoch_time:
+            - epoch_time: '${epoch}'
+            - time_zone: '(UTC+08:00) Asia/Singapore'
+        publish:
+          - date_of_sample: '${date_format}'
         navigate:
           - SUCCESS: SUCCESS
           - FAILURE: on_failure
   outputs:
-    - server_uuids: '${server_uuids}'
+    - current_power_consumption: '${power_consumption}'
+    - date_of_sample: '${date_of_sample}'
   results:
     - FAILURE
     - SUCCESS
 extensions:
   graph:
     steps:
-      get_oneview_token:
-        x: 87
-        'y': 140
-      http_client_get:
-        x: 221
-        'y': 178
-      json_path_query:
-        x: 391
-        'y': 142
+      convert_epoch_time:
+        x: 440
+        'y': 320
         navigate:
-          bbd93363-4787-a0cb-df90-1d387be807de:
-            targetId: dbb96715-3738-9373-038b-0ba448d948b8
+          a021f120-9c7e-9319-d639-8afc84cd0d74:
+            targetId: 3f7b896c-acf5-b665-7590-37502c8985a6
             port: SUCCESS
+      http_client_get:
+        x: 274
+        'y': 102
+      get_latest_sample:
+        x: 270
+        'y': 311
     results:
       SUCCESS:
-        dbb96715-3738-9373-038b-0ba448d948b8:
-          x: 541
-          'y': 171
-
+        3f7b896c-acf5-b665-7590-37502c8985a6:
+          x: 450
+          'y': 105
