@@ -9,8 +9,8 @@ flow:
         do:
           io.cloudslang.base.http.http_client_get:
             - url: '${climatiq_url}'
-            - proxy_host: 10.0.0.1
-            - proxy_port: '3128'
+            - proxy_host: null
+            - proxy_port: null
             - headers: "${'Authorization: Bearer '+climatiq_token}"
         publish:
           - json_result: '${return_result}'
