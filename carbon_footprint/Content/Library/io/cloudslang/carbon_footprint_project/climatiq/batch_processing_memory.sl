@@ -8,10 +8,8 @@ flow:
     - memory: '128'
     - data_unit: GB
     - proxy_host:
-        default: 10.0.0.1
         required: false
     - proxy_port:
-        default: '3128'
         required: false
     - trust_all_roots:
         default: 'true'

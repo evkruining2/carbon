@@ -6,8 +6,10 @@ flow:
     - climatiq_token: Y3Q5BATS8TM2ARKBB18Y8MN95HX1
     - provider: gcp
     - cpu_count: '12'
-    - proxy_host: 10.0.0.1
-    - proxy_port: '3128'
+    - proxy_host:
+        required: false
+    - proxy_port:
+        required: false
     - trust_all_roots: 'true'
     - hostname_verifier: allow_all
   workflow:
