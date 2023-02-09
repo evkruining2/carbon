@@ -17,6 +17,7 @@ flow:
             - x_509_hostname_verifier: '${x_509_hostname_verifier}'
         publish:
           - token
+          - number: '0'
         navigate:
           - FAILURE: on_failure
           - SUCCESS: list_iterator
@@ -74,12 +75,6 @@ extensions:
       get_oneview_token_1:
         x: 80
         'y': 80
-      add_numbers:
-        x: 280
-        'y': 400
-      get_server_uuid_from_name:
-        x: 80
-        'y': 240
       list_iterator:
         x: 280
         'y': 200
@@ -87,6 +82,12 @@ extensions:
           435965e4-4647-bb84-9936-6c534305479c:
             targetId: d6a78080-cfa1-c39e-0c31-318fe0db4606
             port: NO_MORE
+      add_numbers:
+        x: 280
+        'y': 400
+      get_server_uuid_from_name:
+        x: 80
+        'y': 240
       get_server_average_power:
         x: 80
         'y': 440
@@ -95,3 +96,4 @@ extensions:
         d6a78080-cfa1-c39e-0c31-318fe0db4606:
           x: 520
           'y': 160
+
