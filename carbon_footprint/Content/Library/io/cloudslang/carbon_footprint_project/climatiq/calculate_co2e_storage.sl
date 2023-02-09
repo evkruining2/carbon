@@ -18,10 +18,10 @@ flow:
     - data_unit: GB
     - storage_type: ssd
     - proxy_host:
-        default: 10.0.0.1
+        default: 
         required: false
     - proxy_port:
-        default: '3128'
+        default: 
         required: false
     - trust_all_roots:
         default: 'true'
