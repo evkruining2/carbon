@@ -1,4 +1,4 @@
-namespace: io.cloudslang.carbon_footprint_project.test
+namespace: io.cloudslang.carbon_footprint_project.climatiq
 flow:
   name: append
   inputs:
@@ -19,7 +19,7 @@ flow:
           - FAILURE: on_failure
     - batch_processing_cpu:
         do:
-          io.cloudslang.carbon_footprint_project.test.batch_processing_cpu:
+          io.cloudslang.carbon_footprint_project.climatiq.batch_processing_cpu:
             - provider: '${provider}'
         publish:
           - co2e_results
@@ -47,7 +47,7 @@ flow:
           - FAILURE: on_failure
     - batch_processing_memory:
         do:
-          io.cloudslang.carbon_footprint_project.test.batch_processing_memory:
+          io.cloudslang.carbon_footprint_project.climatiq.batch_processing_memory:
             - provider: '${provider}'
         publish:
           - co2e_results
@@ -65,7 +65,7 @@ flow:
           - SUCCESS: batch_processing_storage
     - batch_processing_storage:
         do:
-          io.cloudslang.carbon_footprint_project.test.batch_processing_storage:
+          io.cloudslang.carbon_footprint_project.climatiq.batch_processing_storage:
             - provider: '${provider}'
         publish:
           - co2e_results

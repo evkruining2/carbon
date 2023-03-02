@@ -1,15 +1,22 @@
-namespace: io.cloudslang.carbon_footprint_project.test
+namespace: io.cloudslang.carbon_footprint_project.climatiq
 flow:
-  name: batch_processing_cpu
+  name: batch_processing_memory
   inputs:
     - climatiq_url: 'https://beta3.api.climatiq.io'
     - climatiq_token: Y3Q5BATS8TM2ARKBB18Y8MN95HX1
     - provider: gcp
-    - cpu_count: '12'
-    - proxy_host: 10.0.0.1
-    - proxy_port: '3128'
-    - trust_all_roots: 'true'
-    - hostname_verifier: allow_all
+    - memory: '128'
+    - data_unit: GB
+    - proxy_host:
+        required: false
+    - proxy_port:
+        required: false
+    - trust_all_roots:
+        default: 'true'
+        required: false
+    - hostname_verifier:
+        default: allow_all
+        required: false
   workflow:
     - http_client_get:
         do:
@@ -29,9 +36,9 @@ flow:
         do:
           io.cloudslang.base.json.json_path_query:
             - json_object: '${json_result}'
-            - json_path: "${'$.cloud_providers.'+provider+'.cpu_regions'}"
+            - json_path: "${'$.cloud_providers.'+provider+'.memory_regions'}"
         publish:
-          - aws_cpu_regions: "${cs_replace(return_result.strip('[').strip(']'),'\"','',)}"
+          - memory_regions: "${cs_replace(return_result.strip('[').strip(']'),'\"','',)}"
           - new_string: '['
         navigate:
           - SUCCESS: list_iterator
@@ -39,7 +46,7 @@ flow:
     - list_iterator:
         do:
           io.cloudslang.base.lists.list_iterator:
-            - list: '${aws_cpu_regions}'
+            - list: '${memory_regions}'
             - separator: ','
         publish:
           - location: '${result_string}'
@@ -51,7 +58,7 @@ flow:
         do:
           io.cloudslang.base.strings.append:
             - origin_string: '${new_string}'
-            - text: "${'{'+\\\n'    \"region\": \"'+location+'\",'+\\\n'    \"cpu_count\": '+cpu_count+','+\\\n'    \"cpu_load\": 100,'+\\\n'    \"duration\": 24,'+\\\n'    \"duration_unit\": \"h\"'+\\\n'    },'+\\\n''}"
+            - text: "${'{'+\\\n'    \"region\": \"'+location+'\",'+\\\n'    \"data\": '+memory+','+\\\n'    \"data_unit\": \"'+data_unit+'\",'+\\\n'    \"duration\": 24,'+\\\n'    \"duration_unit\": \"h\"'+\\\n'    },'+\\\n''}"
         publish:
           - new_string
         navigate:
@@ -68,7 +75,7 @@ flow:
     - climatiq_io_get_cpu:
         do:
           io.cloudslang.base.http.http_client_post:
-            - url: "${climatiq_url+'/compute/'+provider+'/cpu/batch'}"
+            - url: "${climatiq_url+'/compute/'+provider+'/memory/batch'}"
             - proxy_host: '${proxy_host}'
             - proxy_port: '${proxy_port}'
             - trust_all_roots: '${trust_all_roots}'

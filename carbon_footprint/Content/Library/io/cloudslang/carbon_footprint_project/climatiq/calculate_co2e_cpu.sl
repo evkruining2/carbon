@@ -4,7 +4,7 @@
 #! @input cpu_count: amount of cpu's
 #!!#
 ########################################################################################################################
-namespace: io.cloudslang.carbon_footprint_project.test
+namespace: io.cloudslang.carbon_footprint_project.climatiq
 flow:
   name: calculate_co2e_cpu
   inputs:
@@ -15,10 +15,10 @@ flow:
     - cpu_count: '24'
     - cpu_load: '88'
     - proxy_host:
-        default: 10.0.0.1
+        default: 
         required: false
     - proxy_port:
-        default: '3128'
+        default: 
         required: false
     - trust_all_roots:
         default: 'true'

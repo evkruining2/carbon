@@ -12,7 +12,7 @@
 #! @output application_co2e: The total co2e of the application
 #!!#
 ########################################################################################################################
-namespace: io.cloudslang.carbon_footprint_project.test
+namespace: io.cloudslang.carbon_footprint_project.climatiq
 flow:
   name: cumulative_co2e_for_application
   inputs:
@@ -27,7 +27,7 @@ flow:
   workflow:
     - calculate_co2e_cpu:
         do:
-          io.cloudslang.carbon_footprint_project.test.calculate_co2e_cpu:
+          io.cloudslang.carbon_footprint_project.climatiq.calculate_co2e_cpu:
             - provider: '${provider}'
             - region: '${region}'
             - cpu_count: '${cpu_count}'
@@ -39,7 +39,7 @@ flow:
           - SUCCESS: calculate_co2e_memory
     - calculate_co2e_memory:
         do:
-          io.cloudslang.carbon_footprint_project.test.calculate_co2e_memory:
+          io.cloudslang.carbon_footprint_project.climatiq.calculate_co2e_memory:
             - provider: '${provider}'
             - region: '${region}'
             - memory: '${memory}'
@@ -51,7 +51,7 @@ flow:
           - SUCCESS: add_cpu_and_memory_co2e
     - calculate_co2e_storage:
         do:
-          io.cloudslang.carbon_footprint_project.test.calculate_co2e_storage:
+          io.cloudslang.carbon_footprint_project.climatiq.calculate_co2e_storage:
             - provider: '${provider}'
             - region: '${region}'
             - storage_amount: '${storage}'
