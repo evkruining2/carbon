@@ -103,7 +103,7 @@ flow:
         do:
           io.cloudslang.base.strings.append:
             - origin_string: '${csv}'
-            - text: "${epoch+','+co2e+','+kw24h+','+cmdb_id+','+cmdb_global_id+','+serverName+','+ip_address+'\\r\\n'}"
+            - text: "${timestamp+','+co2e+','+kw24h+','+cmdb_id+','+cmdb_global_id+','+serverName+','+ip_address+'\\r\\n'}"
         publish:
           - csv: "${cs_replace(new_string,'null','',)}"
         navigate:
@@ -186,4 +186,3 @@ extensions:
         d6a78080-cfa1-c39e-0c31-318fe0db4606:
           x: 613
           'y': 60
-
