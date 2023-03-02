@@ -49,6 +49,7 @@ flow:
   outputs:
     - current_power_consumption: '${power_consumption}'
     - date_of_sample: '${date_of_sample}'
+    - epoch: '${epoch}'
   results:
     - FAILURE
     - SUCCESS
@@ -73,3 +74,4 @@ extensions:
         3f7b896c-acf5-b665-7590-37502c8985a6:
           x: 450
           'y': 105
+
