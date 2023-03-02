@@ -17,6 +17,7 @@ flow:
         required: false
     - cmdb_global_id: 'null'
     - cmdb_id: 'null'
+    - timestamp
   workflow:
     - get_server_names:
         do:

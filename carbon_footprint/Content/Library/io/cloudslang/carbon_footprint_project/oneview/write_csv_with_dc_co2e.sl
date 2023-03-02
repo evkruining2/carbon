@@ -34,6 +34,7 @@ flow:
           - FAILURE: on_failure
   outputs:
     - date_of_sample: '${date_of_sample}'
+    - csv: '${csv}'
   results:
     - FAILURE
     - SUCCESS
