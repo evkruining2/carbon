@@ -2,9 +2,10 @@ namespace: io.cloudslang.carbon_footprint_project.ucmdb
 flow:
   name: get_token
   inputs:
-    - ucmdb_url: ucmdb.advantageinc.org
-    - username
+    - ucmdb_url: 'https://smax-admin.advantageinc.org:3443/ucmdb-server/rest-api/authenticate'
+    - username: admin
     - password:
+        default: MFS0ftware+
         sensitive: true
     - trust_all_roots:
         default: 'true'
@@ -13,38 +14,49 @@ flow:
         default: allow_all
         required: false
   workflow:
-    - get_authentication_token:
+    - get_auth_token:
         do:
-          io.cloudslang.microfocus.ucmdb.v1.authentication.get_authentication_token:
+          io.cloudslang.base.http.http_client_post:
             - url: '${ucmdb_url}'
-            - username: '${username}'
-            - password:
-                value: '${password}'
-                sensitive: true
             - trust_all_roots: '${trust_all_roots}'
             - x_509_hostname_verifier: '${x_509_hostname_verifier}'
+            - body: "${'{'+\\\n'    \"password\":\"'+password+'\",'+\\\n'    \"userName\":\"'+username+'\",'+\\\n'    \"clientContext\": 1'+\\\n'}'}"
+            - content_type: application/json
         publish:
-          - token
+          - json_result: '${return_result}'
+        navigate:
+          - SUCCESS: json_path_query
+          - FAILURE: on_failure
+    - json_path_query:
+        do:
+          io.cloudslang.base.json.json_path_query:
+            - json_object: '${json_result}'
+            - json_path: $.token
+        publish:
+          - token: "${return_result.strip('\"')}"
         navigate:
           - SUCCESS: SUCCESS
           - FAILURE: on_failure
   outputs:
     - token: '${token}'
   results:
-    - FAILURE
     - SUCCESS
+    - FAILURE
 extensions:
   graph:
     steps:
-      get_authentication_token:
-        x: 200
-        'y': 120
+      get_auth_token:
+        x: 80
+        'y': 80
+      json_path_query:
+        x: 280
+        'y': 80
         navigate:
-          3901b535-d093-f4e8-b9aa-d218f9f3f77d:
+          4cd6b627-4081-2055-08a4-2271267db30f:
             targetId: 916d89a3-1a40-7c65-5b24-d7ddf674354a
             port: SUCCESS
     results:
       SUCCESS:
         916d89a3-1a40-7c65-5b24-d7ddf674354a:
-          x: 400
+          x: 560
           'y': 160
