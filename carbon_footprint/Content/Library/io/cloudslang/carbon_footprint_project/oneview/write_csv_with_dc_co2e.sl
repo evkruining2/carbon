@@ -21,17 +21,7 @@ flow:
           - date_of_sample
         navigate:
           - FAILURE: on_failure
-          - SUCCESS: write_to_file
-    - write_to_file:
-        do:
-          io.cloudslang.base.filesystem.write_to_file:
-            - file_path: '${file_path}'
-            - text: '${csv}'
-        publish:
-          - message
-        navigate:
           - SUCCESS: SUCCESS
-          - FAILURE: on_failure
   outputs:
     - date_of_sample: '${date_of_sample}'
     - csv: '${csv}'
@@ -41,21 +31,19 @@ flow:
 extensions:
   graph:
     steps:
+      create_timestamp_flow:
+        x: 70
+        'y': 76
       local_dc_co2e:
-        x: 80
-        'y': 78
-      write_to_file:
-        x: 276
-        'y': 74
+        x: 259
+        'y': 79
         navigate:
-          9ae852d8-ccee-7d5c-229c-fca48647f554:
+          e78f9ee0-0df6-12f4-7556-2bc3695fe731:
             targetId: aa243003-4d3d-ce3a-1c71-bf1644cd54fe
             port: SUCCESS
-      create_timestamp_flow:
-        x: 80
-        'y': 280
     results:
       SUCCESS:
         aa243003-4d3d-ce3a-1c71-bf1644cd54fe:
           x: 448
           'y': 78
+
