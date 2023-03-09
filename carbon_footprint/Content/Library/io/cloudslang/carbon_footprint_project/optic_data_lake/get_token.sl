@@ -5,7 +5,7 @@ flow:
     - odl_url: 'https://optic.advantageinc.org/idm-service/v3.0/tokens'
     - username: carbon_int
     - password:
-        default: 'MFS0ftware#'
+        default: MFS0ftware#
         sensitive: true
     - tenantname: Provider
     - trust_all_roots:
