@@ -8,12 +8,20 @@ flow:
         default: 'MFS0ftware#'
         sensitive: true
     - tenantname: Provider
+    - trust_all_roots:
+        default: 'true'
+        required: false
+    - x_509_hostname_verifier:
+        default: allow_all
+        required: false
   workflow:
     - http_client_post:
         do:
           io.cloudslang.base.http.http_client_post:
             - url: '${odl_url}'
-            - body: "${'{'+\\\n'  \"passwordCredentials\" : {'+\\\n'    \"username\" : \"'+username+'\",'+\\\n'    \"password\" : \"'+password+'\",'+\\\n'  },'+\\\n'  \"tenantName\" : \"'+tenantname+'\"'+\\\n'}'}"
+            - trust_all_roots: '${trust_all_roots}'
+            - x_509_hostname_verifier: '${x_509_hostname_verifier}'
+            - body: "${'{'+\\\n'  \"passwordCredentials\" : {'+\\\n'    \"username\" : \"'+username+'\",'+\\\n'    \"password\" : \"'+password+'\"'+\\\n'  },'+\\\n'  \"tenantName\" : \"'+tenantname+'\"'+\\\n'}'}"
             - content_type: application/json
         publish:
           - json_result: '${return_result}'
@@ -53,3 +61,4 @@ extensions:
         313290e2-e3ff-f8f6-aa5a-9f330f6f253a:
           x: 560
           'y': 160
+
