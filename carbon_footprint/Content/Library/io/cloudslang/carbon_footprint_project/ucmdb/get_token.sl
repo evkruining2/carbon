@@ -2,10 +2,10 @@ namespace: io.cloudslang.carbon_footprint_project.ucmdb
 flow:
   name: get_token
   inputs:
-    - ucmdb_url: 'https://smax-admin.advantageinc.org:3443/ucmdb-server/rest-api/authenticate'
-    - username: admin
+    - ucmdb_url: 'https://optic.advantageinc.org:443/ucmdb-server/rest-api/authenticate'
+    - username: stefan.brie
     - password:
-        default: MFS0ftware+
+        default: MFS0ftware%
         sensitive: true
     - trust_all_roots:
         default: 'true'
@@ -20,7 +20,7 @@ flow:
             - url: '${ucmdb_url}'
             - trust_all_roots: '${trust_all_roots}'
             - x_509_hostname_verifier: '${x_509_hostname_verifier}'
-            - body: "${'{'+\\\n'    \"password\":\"'+password+'\",'+\\\n'    \"userName\":\"'+username+'\",'+\\\n'    \"clientContext\": 1'+\\\n'}'}"
+            - body: "${'{'+\\\n'    \"password\":\"'+password+'\",'+\\\n'    \"username\":\"'+username+'\",'+\\\n'    \"clientContext\": 1'+\\\n'}'}"
             - content_type: application/json
         publish:
           - json_result: '${return_result}'
@@ -60,3 +60,4 @@ extensions:
         916d89a3-1a40-7c65-5b24-d7ddf674354a:
           x: 560
           'y': 160
+
