@@ -15,8 +15,6 @@ flow:
     - x_509_hostname_verifier:
         default: allow_all
         required: false
-    - cmdb_global_id: 'null'
-    - cmdb_id: 'null'
     - timestamp
   workflow:
     - get_server_names:
@@ -99,16 +97,7 @@ flow:
         publish:
           - co2e: '${result}'
         navigate:
-          - SUCCESS: construct_csv
-    - construct_csv:
-        do:
-          io.cloudslang.base.strings.append:
-            - origin_string: '${csv}'
-            - text: "${timestamp+','+co2e+','+kw24h+','+cmdb_id+','+cmdb_global_id+','+serverName+','+ip_address+'\\r\\n'}"
-        publish:
-          - csv: "${cs_replace(new_string,'null','',)}"
-        navigate:
-          - SUCCESS: list_iterator
+          - SUCCESS: get_ucmdbid
     - lookup_ip_address:
         do:
           io.cloudslang.carbon_footprint_project.oneview.subflows.lookup_ip_address:
@@ -126,6 +115,31 @@ flow:
           - kw24h: '${result}'
         navigate:
           - SUCCESS: co2e_per_hour
+    - get_ucmdbid:
+        do:
+          io.cloudslang.carbon_footprint_project.ucmdb.get_ucmdbid:
+            - fqdn: '${serverName}'
+        publish:
+          - ucmdbid
+          - global_id
+        navigate:
+          - FAILURE: on_failure
+          - SUCCESS: odl_load_data
+    - odl_load_data:
+        do:
+          io.cloudslang.carbon_footprint_project.optic_data_lake.odl_load_data:
+            - timestamp: '${timestamp}'
+            - scope2_co2e: '${co2e}'
+            - powerusage: '${kw24h}'
+            - cmdb_id: '${ucmdbid}'
+            - cmdb_global_id: '${global_id}'
+            - node_fqdn: '${serverName}'
+            - node_ip_address: '${ip_address}'
+        publish:
+          - odl_result
+        navigate:
+          - SUCCESS: list_iterator
+          - FAILURE: on_failure
   outputs:
     - servers: '${list_of_servers}'
     - date_of_sample: '${date_of_sample}'
@@ -144,8 +158,8 @@ extensions:
         x: 608
         'y': 392
       co2e_per_24hr:
-        x: 612
-        'y': 214
+        x: 773
+        'y': 394
       watts_to_kwh:
         x: 218
         'y': 398
@@ -153,6 +167,9 @@ extensions:
           f5dcd00b-a861-83e7-bd7d-b7fd08d2dea9:
             targetId: 2c11562d-9351-b40b-d55e-e83262175e70
             port: ILLEGAL
+      get_ucmdbid:
+        x: 613
+        'y': 222
       get_server_uuid_from_name:
         x: 215
         'y': 213
@@ -175,9 +192,9 @@ extensions:
       get_server_names:
         x: 48
         'y': 60
-      construct_csv:
-        x: 413
-        'y': 214
+      odl_load_data:
+        x: 416
+        'y': 225
     results:
       FAILURE:
         2c11562d-9351-b40b-d55e-e83262175e70:
@@ -187,3 +204,4 @@ extensions:
         d6a78080-cfa1-c39e-0c31-318fe0db4606:
           x: 613
           'y': 60
+
