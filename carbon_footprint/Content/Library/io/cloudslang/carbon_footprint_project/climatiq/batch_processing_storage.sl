@@ -73,7 +73,9 @@ flow:
         navigate:
           - SUCCESS: climatiq_io_get_cpu
     - climatiq_io_get_cpu:
-        worker_group: "${get_sp('io.cloudslang.carbon_footprint_project.worker_group')}"
+        worker_group:
+          value: "${get_sp('io.cloudslang.carbon_footprint_project.worker_group')}"
+          override: true
         do:
           io.cloudslang.base.http.http_client_post:
             - url: "${climatiq_url+'/compute/'+provider+'/storage/batch'}"

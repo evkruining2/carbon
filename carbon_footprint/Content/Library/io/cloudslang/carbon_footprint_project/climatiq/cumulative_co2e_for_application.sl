@@ -26,6 +26,9 @@ flow:
     - region: europe_west_1
   workflow:
     - calculate_co2e_cpu:
+        worker_group:
+          value: "${get_sp('io.cloudslang.carbon_footprint_project.worker_group')}"
+          override: true
         do:
           io.cloudslang.carbon_footprint_project.climatiq.calculate_co2e_cpu:
             - provider: '${provider}'
@@ -38,6 +41,9 @@ flow:
           - FAILURE: on_failure
           - SUCCESS: calculate_co2e_memory
     - calculate_co2e_memory:
+        worker_group:
+          value: "${get_sp('io.cloudslang.carbon_footprint_project.worker_group')}"
+          override: true
         do:
           io.cloudslang.carbon_footprint_project.climatiq.calculate_co2e_memory:
             - provider: '${provider}'
@@ -50,6 +56,9 @@ flow:
           - FAILURE: on_failure
           - SUCCESS: add_cpu_and_memory_co2e
     - calculate_co2e_storage:
+        worker_group:
+          value: "${get_sp('io.cloudslang.carbon_footprint_project.worker_group')}"
+          override: true
         do:
           io.cloudslang.carbon_footprint_project.climatiq.calculate_co2e_storage:
             - provider: '${provider}'

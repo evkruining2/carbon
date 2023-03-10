@@ -13,7 +13,7 @@ flow:
   workflow:
     - get_climatiq_io_provider_emission_factor:
         worker_group:
-          value: "${get_sp('worker_group')}"
+          value: "${get_sp('io.cloudslang.carbon_footprint_project.worker_group')}"
           override: true
         do:
           io.cloudslang.base.http.http_client_post:
