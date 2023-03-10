@@ -6,19 +6,18 @@ flow:
     - climatiq_token: Y3Q5BATS8TM2ARKBB18Y8MN95HX1
     - provider: gcp
     - cpu_count: '12'
-    - proxy_host:
-        required: false
-    - proxy_port:
-        required: false
     - trust_all_roots: 'true'
     - hostname_verifier: allow_all
   workflow:
     - http_client_get:
+        worker_group:
+          value: "${get_sp('worker_group')}"
+          override: true
         do:
           io.cloudslang.base.http.http_client_get:
             - url: "${climatiq_url+'/compute'}"
-            - proxy_host: '${proxy_host}'
-            - proxy_port: '${proxy_port}'
+            - proxy_host: "${get_sp('proxy_host')}"
+            - proxy_port: "${get_sp('proxy_port')}"
             - trust_all_roots: '${trust_all_roots}'
             - x_509_hostname_verifier: '${hostname_verifier}'
             - headers: "${'Authorization: Bearer '+climatiq_token}"
@@ -68,11 +67,14 @@ flow:
         navigate:
           - SUCCESS: climatiq_io_get_cpu
     - climatiq_io_get_cpu:
+        worker_group:
+          value: "${get_sp('worker_group')}"
+          override: true
         do:
           io.cloudslang.base.http.http_client_post:
             - url: "${climatiq_url+'/compute/'+provider+'/cpu/batch'}"
-            - proxy_host: '${proxy_host}'
-            - proxy_port: '${proxy_port}'
+            - proxy_host: "${get_sp('proxy_host')}"
+            - proxy_port: "${get_sp('proxy_port')}"
             - trust_all_roots: '${trust_all_roots}'
             - x_509_hostname_verifier: '${hostname_verifier}'
             - headers: "${'Authorization: Bearer '+climatiq_token}"

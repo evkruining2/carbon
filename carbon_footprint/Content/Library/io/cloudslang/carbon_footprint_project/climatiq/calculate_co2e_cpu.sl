@@ -14,12 +14,6 @@ flow:
     - region: eu_west_1
     - cpu_count: '24'
     - cpu_load: '88'
-    - proxy_host:
-        default: 
-        required: false
-    - proxy_port:
-        default: 
-        required: false
     - trust_all_roots:
         default: 'true'
         required: false
@@ -28,11 +22,14 @@ flow:
         required: false
   workflow:
     - climatiq_io_get_cpu:
+        worker_group:
+          value: "${get_sp('worker_group')}"
+          override: true
         do:
           io.cloudslang.base.http.http_client_post:
             - url: "${climatiq_url+'/compute/'+provider+'/cpu'}"
-            - proxy_host: '${proxy_host}'
-            - proxy_port: '${proxy_port}'
+            - proxy_host: "${get_sp('proxy_host')}"
+            - proxy_port: "${get_sp('proxy_port')}"
             - trust_all_roots: '${trust_all_roots}'
             - x_509_hostname_verifier: '${hostname_verifier}'
             - headers: "${'Authorization: Bearer '+climatiq_token}"
@@ -43,6 +40,7 @@ flow:
           - SUCCESS: json_path_extract_co2e
           - FAILURE: on_failure
     - json_path_extract_co2e:
+        worker_group: "${get_sp('worker_group')}"
         do:
           io.cloudslang.base.json.json_path_query:
             - json_object: '${json_result}'

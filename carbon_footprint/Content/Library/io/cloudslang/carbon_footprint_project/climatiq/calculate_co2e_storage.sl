@@ -17,12 +17,6 @@ flow:
     - storage_amount: '2000'
     - data_unit: GB
     - storage_type: ssd
-    - proxy_host:
-        default: 
-        required: false
-    - proxy_port:
-        default: 
-        required: false
     - trust_all_roots:
         default: 'true'
         required: false
@@ -31,11 +25,14 @@ flow:
         required: false
   workflow:
     - climatiq_io_get_storage:
+        worker_group:
+          value: "${get_sp('worker_group')}"
+          override: true
         do:
           io.cloudslang.base.http.http_client_post:
             - url: "${climatiq_url+'/compute/'+provider+'/storage'}"
-            - proxy_host: '${proxy_host}'
-            - proxy_port: '${proxy_port}'
+            - proxy_host: "${get_sp('proxy_host')}"
+            - proxy_port: "${get_sp('proxy_port')}"
             - trust_all_roots: '${trust_all_roots}'
             - x_509_hostname_verifier: '${hostname_verifier}'
             - headers: "${'Authorization: Bearer '+climatiq_token}"
@@ -63,6 +60,9 @@ flow:
 extensions:
   graph:
     steps:
+      climatiq_io_get_storage:
+        x: 80
+        'y': 80
       json_path_extract_co2e:
         x: 280
         'y': 80
@@ -70,9 +70,6 @@ extensions:
           bc1c16a8-9698-c49e-f025-5b5febbe9128:
             targetId: 9cf1a507-2d60-db49-5d3c-a6c78597df86
             port: SUCCESS
-      climatiq_io_get_storage:
-        x: 80
-        'y': 80
     results:
       SUCCESS:
         9cf1a507-2d60-db49-5d3c-a6c78597df86:

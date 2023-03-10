@@ -11,11 +11,14 @@ flow:
     - climatiq_token: Y3Q5BATS8TM2ARKBB18Y8MN95HX1
   workflow:
     - http_client_get:
+        worker_group:
+          value: "${get_sp('worker_group')}"
+          override: true
         do:
           io.cloudslang.base.http.http_client_get:
             - url: '${climatiq_url}'
-            - proxy_host: null
-            - proxy_port: null
+            - proxy_host: "${get_sp('proxy_host')}"
+            - proxy_port: "${get_sp('proxy_port')}"
             - headers: "${'Authorization: Bearer '+climatiq_token}"
         publish:
           - json_result: '${return_result}'
