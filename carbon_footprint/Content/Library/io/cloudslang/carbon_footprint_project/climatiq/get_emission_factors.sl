@@ -18,8 +18,8 @@ flow:
         do:
           io.cloudslang.base.http.http_client_post:
             - url: "${climatiq_url+'/estimate'}"
-            - proxy_host: "${get_sp('proxy_host')}"
-            - proxy_port: "${get_sp('proxy_port')}"
+            - proxy_host: "${get_sp('io.cloudslang.carbon_footprint_project.proxy_host')}"
+            - proxy_port: "${get_sp('io.cloudslang.carbon_footprint_project.proxy_port')}"
             - headers: "${'Authorization: Bearer '+climatiq_token}"
             - body: "${'{'+\\\n'\"emission_factor\": {'+\\\n'\"uuid\": \"'+provider_uuid+'\"},'+\\\n'\"parameters\": {'+\\\n'\"energy\": 1,'+\\\n'\"energy_unit\": \"kWh\"'+\\\n'}}'}"
         publish:

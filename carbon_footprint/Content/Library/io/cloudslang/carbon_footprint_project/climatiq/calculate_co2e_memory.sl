@@ -22,12 +22,14 @@ flow:
         required: false
   workflow:
     - climatiq_io_get_memory:
-        worker_group: "${get_sp('worker_group')}"
+        worker_group:
+          value: "${get_sp('worker_group')}"
+          override: true
         do:
           io.cloudslang.base.http.http_client_post:
             - url: "${climatiq_url+'/compute/'+provider+'/memory'}"
-            - proxy_host: "${get_sp('proxy_host')}"
-            - proxy_port: "${get_sp('proxy_port')}"
+            - proxy_host: "${get_sp('io.cloudslang.carbon_footprint_project.proxy_host')}"
+            - proxy_port: "${get_sp('io.cloudslang.carbon_footprint_project.proxy_port')}"
             - trust_all_roots: '${trust_all_roots}'
             - x_509_hostname_verifier: '${hostname_verifier}'
             - headers: "${'Authorization: Bearer '+climatiq_token}"

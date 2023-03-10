@@ -16,8 +16,8 @@ flow:
         do:
           io.cloudslang.base.http.http_client_get:
             - url: "${climatiq_url+'/compute'}"
-            - proxy_host: "${get_sp('proxy_host')}"
-            - proxy_port: "${get_sp('proxy_port')}"
+            - proxy_host: "${get_sp('io.cloudslang.carbon_footprint_project.proxy_host')}"
+            - proxy_port: "${get_sp('io.cloudslang.carbon_footprint_project.proxy_port')}"
             - trust_all_roots: '${trust_all_roots}'
             - x_509_hostname_verifier: '${hostname_verifier}'
             - headers: "${'Authorization: Bearer '+climatiq_token}"
@@ -73,8 +73,8 @@ flow:
         do:
           io.cloudslang.base.http.http_client_post:
             - url: "${climatiq_url+'/compute/'+provider+'/cpu/batch'}"
-            - proxy_host: "${get_sp('proxy_host')}"
-            - proxy_port: "${get_sp('proxy_port')}"
+            - proxy_host: "${get_sp('io.cloudslang.carbon_footprint_project.proxy_host')}"
+            - proxy_port: "${get_sp('io.cloudslang.carbon_footprint_project.proxy_port')}"
             - trust_all_roots: '${trust_all_roots}'
             - x_509_hostname_verifier: '${hostname_verifier}'
             - headers: "${'Authorization: Bearer '+climatiq_token}"

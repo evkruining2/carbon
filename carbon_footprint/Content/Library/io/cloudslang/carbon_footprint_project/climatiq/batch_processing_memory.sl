@@ -7,10 +7,6 @@ flow:
     - provider: gcp
     - memory: '128'
     - data_unit: GB
-    - proxy_host:
-        required: false
-    - proxy_port:
-        required: false
     - trust_all_roots:
         default: 'true'
         required: false
@@ -19,11 +15,14 @@ flow:
         required: false
   workflow:
     - http_client_get:
+        worker_group:
+          value: "${get_sp('io.cloudslang.carbon_footprint_project.worker_group')}"
+          override: true
         do:
           io.cloudslang.base.http.http_client_get:
             - url: "${climatiq_url+'/compute'}"
-            - proxy_host: '${proxy_host}'
-            - proxy_port: '${proxy_port}'
+            - proxy_host: "${get_sp('io.cloudslang.carbon_footprint_project.proxy_host')}"
+            - proxy_port: "${get_sp('io.cloudslang.carbon_footprint_project.proxy_port')}"
             - trust_all_roots: '${trust_all_roots}'
             - x_509_hostname_verifier: '${hostname_verifier}'
             - headers: "${'Authorization: Bearer '+climatiq_token}"
@@ -73,11 +72,14 @@ flow:
         navigate:
           - SUCCESS: climatiq_io_get_cpu
     - climatiq_io_get_cpu:
+        worker_group:
+          value: "${get_sp('io.cloudslang.carbon_footprint_project.worker_group')}"
+          override: true
         do:
           io.cloudslang.base.http.http_client_post:
             - url: "${climatiq_url+'/compute/'+provider+'/memory/batch'}"
-            - proxy_host: '${proxy_host}'
-            - proxy_port: '${proxy_port}'
+            - proxy_host: "${get_sp('io.cloudslang.carbon_footprint_project.proxy_host')}"
+            - proxy_port: "${get_sp('io.cloudslang.carbon_footprint_project.proxy_port')}"
             - trust_all_roots: '${trust_all_roots}'
             - x_509_hostname_verifier: '${hostname_verifier}'
             - headers: "${'Authorization: Bearer '+climatiq_token}"

@@ -1,4 +1,4 @@
-namespace: ''
+namespace: io.cloudslang.carbon_footprint_project
 properties:
   - proxy_host: ''
   - proxy_port: ''
