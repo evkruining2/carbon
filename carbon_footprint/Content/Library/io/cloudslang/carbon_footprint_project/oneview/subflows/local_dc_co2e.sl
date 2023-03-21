@@ -193,8 +193,8 @@ extensions:
         x: 48
         'y': 60
       odl_load_data:
-        x: 416
-        'y': 225
+        x: 400
+        'y': 240
     results:
       FAILURE:
         2c11562d-9351-b40b-d55e-e83262175e70:
@@ -204,4 +204,3 @@ extensions:
         d6a78080-cfa1-c39e-0c31-318fe0db4606:
           x: 613
           'y': 60
-

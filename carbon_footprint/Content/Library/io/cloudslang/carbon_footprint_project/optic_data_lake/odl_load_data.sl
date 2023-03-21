@@ -19,6 +19,8 @@ flow:
         required: true
     - node_fqdn
     - node_ip_address
+    - cloudvendor: 'null'
+    - cloudregion: 'null'
     - trust_all_roots:
         default: 'true'
         required: false
@@ -43,7 +45,7 @@ flow:
             - trust_all_roots: '${trust_all_roots}'
             - x_509_hostname_verifier: '${x_509_hostname_verifier}'
             - headers: "${'Authorization: Bearer '+token+'\\r\\nx-monitoredcollection: '+schema_name}"
-            - body: "${'{'+\\\n'   \"timestamp_utc_s\": '+timestamp+','+\\\n'   \"scope2_co2e\": '+scope2_co2e+','+\\\n'   \"scope3_co2e\": '+scope3_co2e+','+\\\n'   \"powerUsage\": '+powerusage+','+\\\n'   \"cmdb_id\": \"'+cmdb_id+'\",'+\\\n'   \"cmdb_global_id\": \"'+cmdb_global_id+'\",'+\\\n'   \"node_fqdn\": \"'+node_fqdn+'\",'+\\\n'   \"node_ip_address\": \"'+node_ip_address+'\"'+\\\n'}'}"
+            - body: "${'{'+\\\n'   \"timestamp_utc_s\": '+timestamp+','+\\\n'   \"scope2_co2e\": '+scope2_co2e+','+\\\n'   \"scope3_co2e\": '+scope3_co2e+','+\\\n'   \"powerUsage\": '+powerusage+','+\\\n'   \"cmdb_id\": \"'+cmdb_id+'\",'+\\\n'   \"cmdb_global_id\": \"'+cmdb_global_id+'\",'+\\\n'   \"node_fqdn\": \"'+node_fqdn+'\",'+\\\n'   \"node_ip_address\": \"'+node_ip_address+'\",'+\\\n'   \"cloudvendor\": \"'+cloudvendor+'\",'+\\\n'   \"cloudregion\": \"'+cloudregion+'\"'+\\\n'}'}"
             - content_type: application/json
         publish:
           - return_result
@@ -73,4 +75,3 @@ extensions:
         f56b79ea-ffbb-8d3b-7ca5-f9e0c05748ad:
           x: 520
           'y': 200
-
