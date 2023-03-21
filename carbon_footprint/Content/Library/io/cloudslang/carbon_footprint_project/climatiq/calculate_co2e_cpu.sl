@@ -13,7 +13,7 @@ flow:
     - provider: aws
     - region: eu_west_1
     - cpu_count: '24'
-    - cpu_load: '88'
+    - cpu_load: '0.8'
     - trust_all_roots:
         default: 'true'
         required: false

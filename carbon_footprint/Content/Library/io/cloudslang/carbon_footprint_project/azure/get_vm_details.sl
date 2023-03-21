@@ -17,14 +17,14 @@ flow:
           io.cloudslang.carbon_footprint_project.azure.get_token: []
         publish:
           - azure_token
-          - list: "${'servername,vmid,location,vmsize,cpus,memory'+'\\n\\r'}"
+          - list: "${'servername,vmid,location,vmsize,cpus,memory,ip_address,fqdn,total_co2e'+'\\n\\r'}"
         navigate:
           - FAILURE: on_failure
           - SUCCESS: http_client_get
     - get_list_of_servers:
         do:
           io.cloudslang.base.json.json_path_query:
-            - json_object: '${json_result}'
+            - json_object: '${master_json_result}'
             - json_path: '$.value[*].name'
         publish:
           - servers: "${cs_replace(return_result.strip('[').strip(']'),'\"','',)}"
@@ -40,7 +40,7 @@ flow:
             - headers: "${'Authorization: Bearer '+azure_token}"
             - content_type: application/json
         publish:
-          - json_result: '${return_result}'
+          - master_json_result: '${return_result}'
         navigate:
           - SUCCESS: get_list_of_servers
           - FAILURE: on_failure
@@ -58,7 +58,7 @@ flow:
     - get_vmsize:
         do:
           io.cloudslang.base.json.json_path_query:
-            - json_object: '${json_result}'
+            - json_object: '${master_json_result}'
             - json_path: "${'$..value[?(@.name == \"'+server+'\")].properties.hardwareProfile.vmSize'}"
         publish:
           - vmsize: "${return_result.strip('[').strip(']').strip('\"')}"
@@ -68,7 +68,7 @@ flow:
     - get_location:
         do:
           io.cloudslang.base.json.json_path_query:
-            - json_object: '${json_result}'
+            - json_object: '${master_json_result}'
             - json_path: "${'$..value[?(@.name == \"'+server+'\")].location'}"
         publish:
           - location: "${return_result.strip('[').strip(']').strip('\"')}"
@@ -78,7 +78,7 @@ flow:
     - get_vmid:
         do:
           io.cloudslang.base.json.json_path_query:
-            - json_object: '${json_result}'
+            - json_object: '${master_json_result}'
             - json_path: "${'$..value[?(@.name == \"'+server+'\")].properties.vmId'}"
         publish:
           - vmid: "${return_result.strip('[').strip(']').strip('\"')}"
@@ -89,7 +89,7 @@ flow:
         do:
           io.cloudslang.base.strings.append:
             - origin_string: '${list}'
-            - text: "${server+','+vmid+','+location+','+vmsize+','+cpus+','+memory+'\\n\\r'}"
+            - text: "${server+','+vmid+','+location+','+vmsize+','+cpus+','+memory+','+ip_address+','+fqdn+','+total_co2e+'\\n\\r'}"
         publish:
           - list: '${new_string}'
         navigate:
@@ -103,7 +103,112 @@ flow:
           - memory
         navigate:
           - FAILURE: on_failure
+          - SUCCESS: get_network
+    - get_network:
+        do:
+          io.cloudslang.base.json.json_path_query:
+            - json_object: '${master_json_result}'
+            - json_path: "${'$..value[?(@.name == \"'+server+'\")].properties.networkProfile.networkInterfaces..id'}"
+        publish:
+          - network_id: "${return_result.strip('[').strip(']').strip('\"')}"
+        navigate:
+          - SUCCESS: get_public_network
+          - FAILURE: on_failure
+    - get_public_network:
+        do:
+          io.cloudslang.base.http.http_client_get:
+            - url: "${'https://management.azure.com/'+network_id+'?api-version='+api_version}"
+            - trust_all_roots: '${trust_all_roots}'
+            - x_509_hostname_verifier: '${x_509_hostname_verifier}'
+            - headers: "${'Authorization: Bearer '+azure_token}"
+            - content_type: application/json
+        publish:
+          - json_result: '${return_result}'
+        navigate:
+          - SUCCESS: get_public_interface_id
+          - FAILURE: on_failure
+    - get_public_interface_id:
+        do:
+          io.cloudslang.base.json.json_path_query:
+            - json_object: '${json_result}'
+            - json_path: "${'$..[?(@.name == \"'+server+'\")].properties.publicIPAddress.id'}"
+        publish:
+          - pub_network_id: "${return_result.strip('[').strip(']').strip('\"')}"
+        navigate:
+          - SUCCESS: get_pub_ip_and_fqdn
+          - FAILURE: on_failure
+    - get_pub_ip_and_fqdn:
+        do:
+          io.cloudslang.base.http.http_client_get:
+            - url: "${'https://management.azure.com/'+pub_network_id+'?api-version='+api_version}"
+            - trust_all_roots: '${trust_all_roots}'
+            - x_509_hostname_verifier: '${x_509_hostname_verifier}'
+            - headers: "${'Authorization: Bearer '+azure_token}"
+            - content_type: application/json
+        publish:
+          - json_result: '${return_result}'
+        navigate:
+          - SUCCESS: get_ip
+          - FAILURE: set_ip_and_fqdn_to_null
+    - get_ip:
+        do:
+          io.cloudslang.base.json.json_path_query:
+            - json_object: '${json_result}'
+            - json_path: $.properties.ipAddress
+        publish:
+          - ip_address: "${return_result.strip('[').strip(']').strip('\"')}"
+        navigate:
+          - SUCCESS: get_ip_1
+          - FAILURE: on_failure
+    - get_ip_1:
+        do:
+          io.cloudslang.base.json.json_path_query:
+            - json_object: '${json_result}'
+            - json_path: $.properties.dnsSettings.fqdn
+        publish:
+          - fqdn: "${return_result.strip('[').strip(']').strip('\"')}"
+        navigate:
+          - SUCCESS: query_vm_details_1
+          - FAILURE: on_failure
+    - query_vm_details_1:
+        do:
+          io.cloudslang.carbon_footprint_project.azure.query_vm_details:
+            - image_name: '${vmsize}'
+        publish:
+          - cpus
+          - memory
+        navigate:
+          - FAILURE: on_failure
+          - SUCCESS: translate_azure_regions
+    - translate_azure_regions:
+        do:
+          io.cloudslang.carbon_footprint_project.climatiq.translate_azure_regions:
+            - az_region: '${location}'
+        publish:
+          - region
+        navigate:
+          - FAILURE: on_failure
+          - SUCCESS: azure_vm_instance
+    - azure_vm_instance:
+        do:
+          io.cloudslang.carbon_footprint_project.climatiq.azure_vm_instance:
+            - region: '${region}'
+            - cpu_count: '${cpus}'
+            - memory: '${memory}'
+        publish:
+          - total_co2e
+        navigate:
+          - FAILURE: on_failure
           - SUCCESS: build_list
+    - set_ip_and_fqdn_to_null:
+        do:
+          io.cloudslang.base.utils.do_nothing: []
+        publish:
+          - ip_address: 'null'
+          - fqdn: 'null'
+        navigate:
+          - SUCCESS: query_vm_details_1
+          - FAILURE: on_failure
   outputs:
     - azure_server_list: '${list}'
   results:
@@ -114,37 +219,67 @@ extensions:
     steps:
       get_list_of_servers:
         x: 400
-        'y': 120
+        'y': 40
       get_vmsize:
         x: 240
-        'y': 320
-      list_iterator:
+        'y': 240
+      get_public_network:
+        x: 240
+        'y': 440
+      get_ip_1:
+        x: 440
+        'y': 600
+      query_vm_details_1:
+        x: 640
+        'y': 600
+      set_ip_and_fqdn_to_null:
+        x: 360
+        'y': 760
+      get_network:
+        x: 400
+        'y': 440
+      get_pub_ip_and_fqdn:
         x: 80
-        'y': 320
+        'y': 600
+      azure_vm_instance:
+        x: 880
+        'y': 440
+      get_public_interface_id:
+        x: 80
+        'y': 400
+      list_iterator:
+        x: 600
+        'y': 40
         navigate:
           a47cdb3f-74e6-05b8-aac1-5f880a0009b7:
             targetId: c01cab71-dfd0-f554-9dbb-6cda97d840d6
             port: NO_MORE
       build_list:
-        x: 320
-        'y': 520
+        x: 800
+        'y': 240
+      get_ip:
+        x: 240
+        'y': 600
       get_token:
         x: 80
-        'y': 120
+        'y': 40
       query_vm_details:
         x: 560
-        'y': 520
+        'y': 440
       http_client_get:
         x: 240
-        'y': 120
+        'y': 40
       get_vmid:
         x: 560
-        'y': 320
+        'y': 240
+      translate_azure_regions:
+        x: 840
+        'y': 600
       get_location:
         x: 400
-        'y': 320
+        'y': 240
     results:
       SUCCESS:
         c01cab71-dfd0-f554-9dbb-6cda97d840d6:
-          x: 80
-          'y': 520
+          x: 920
+          'y': 40
