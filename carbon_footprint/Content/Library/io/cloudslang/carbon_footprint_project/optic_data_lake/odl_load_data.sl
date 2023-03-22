@@ -19,8 +19,12 @@ flow:
         required: true
     - node_fqdn
     - node_ip_address
-    - cloudvendor: 'null'
-    - cloudregion: 'null'
+    - cloudvendor:
+        default: ' '
+        required: false
+    - cloudregion:
+        default: ' '
+        required: false
     - trust_all_roots:
         default: 'true'
         required: false
@@ -75,3 +79,4 @@ extensions:
         f56b79ea-ffbb-8d3b-7ca5-f9e0c05748ad:
           x: 520
           'y': 200
+
