@@ -3,7 +3,7 @@ flow:
   name: get_topology
   inputs:
     - ucmdb_api: 'https://optic.advantageinc.org:443/ucmdb-server/rest-api/topology'
-    - topology: DCOE ESG ESX
+    - topology: DCOE_ESG_AWS
   workflow:
     - get_token:
         do:
