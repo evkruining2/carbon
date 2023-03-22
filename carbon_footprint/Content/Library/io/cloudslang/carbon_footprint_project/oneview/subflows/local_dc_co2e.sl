@@ -16,6 +16,9 @@ flow:
         default: allow_all
         required: false
     - timestamp
+    - dcoe_scope3_co2e:
+        default: '0.9781'
+        required: false
   workflow:
     - get_server_names:
         do:
@@ -124,12 +127,13 @@ flow:
           - global_id
         navigate:
           - FAILURE: on_failure
-          - SUCCESS: odl_load_data
+          - SUCCESS: update_ci
     - odl_load_data:
         do:
           io.cloudslang.carbon_footprint_project.optic_data_lake.odl_load_data:
             - timestamp: '${timestamp}'
             - scope2_co2e: '${co2e}'
+            - scope3_co2e: '${dcoe_scope3_co2e}'
             - powerusage: '${kw24h}'
             - cmdb_id: '${ucmdbid}'
             - cmdb_global_id: '${global_id}'
@@ -140,6 +144,17 @@ flow:
         navigate:
           - SUCCESS: list_iterator
           - FAILURE: on_failure
+    - update_ci:
+        do:
+          io.cloudslang.carbon_footprint_project.ucmdb.update_ci:
+            - ucmdb_id: '${ucmdbid}'
+            - scope2: '${co2e}'
+            - scope3: '${dcoe_scope3_co2e}'
+            - power_usage: '${kw24h}'
+            - region: none
+        navigate:
+          - FAILURE: on_failure
+          - SUCCESS: odl_load_data
   outputs:
     - servers: '${list_of_servers}'
     - date_of_sample: '${date_of_sample}'
@@ -168,8 +183,8 @@ extensions:
             targetId: 2c11562d-9351-b40b-d55e-e83262175e70
             port: ILLEGAL
       get_ucmdbid:
-        x: 613
-        'y': 222
+        x: 772
+        'y': 217
       get_server_uuid_from_name:
         x: 215
         'y': 213
@@ -195,6 +210,9 @@ extensions:
       odl_load_data:
         x: 400
         'y': 240
+      update_ci:
+        x: 600
+        'y': 239
     results:
       FAILURE:
         2c11562d-9351-b40b-d55e-e83262175e70:
@@ -204,3 +222,4 @@ extensions:
         d6a78080-cfa1-c39e-0c31-318fe0db4606:
           x: 613
           'y': 60
+
