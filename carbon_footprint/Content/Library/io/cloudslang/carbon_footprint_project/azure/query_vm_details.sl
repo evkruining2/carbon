@@ -9,7 +9,8 @@ flow:
           io.cloudslang.base.utils.do_nothing: []
         publish:
           - json_result: |-
-              ${{
+              ${'''
+              {
                   "value": [
                       {
                           "name": "Standard_A0",
@@ -3372,7 +3373,8 @@ flow:
                           "maxDataDiskCount": 32
                       }
                   ]
-              }}
+              }
+              '''}
         navigate:
           - SUCCESS: get_cpu_cores
           - FAILURE: on_failure
@@ -3423,3 +3425,4 @@ extensions:
         aef09dda-1b70-2509-d5b6-5d70986b0091:
           x: 680
           'y': 80
+
