@@ -5,6 +5,8 @@ flow:
     - azure_url: 'https://management.azure.com/subscriptions'
     - subscription_id: 4d08f192-8c63-49fa-a461-5cdd32ce42dc
     - api_version: '2022-11-01'
+    - ucmdbids
+    - timestamp
     - trust_all_roots:
         default: 'true'
         required: false
@@ -17,7 +19,7 @@ flow:
           io.cloudslang.carbon_footprint_project.azure.get_token: []
         publish:
           - azure_token
-          - list: "${'servername,vmid,location,vmsize,cpus,memory,ip_address,fqdn,total_co2e'+'\\n\\r'}"
+          - list: "${'servername,vmid,location,vmsize,cpus,memory,ip_address,fqdn,total_co2e,cmdb_id,cmdb_global_id'+'\\n\\r'}"
         navigate:
           - FAILURE: on_failure
           - SUCCESS: http_client_get
@@ -85,15 +87,6 @@ flow:
         navigate:
           - SUCCESS: query_vm_details
           - FAILURE: on_failure
-    - build_list:
-        do:
-          io.cloudslang.base.strings.append:
-            - origin_string: '${list}'
-            - text: "${server+','+vmid+','+location+','+vmsize+','+cpus+','+memory+','+ip_address+','+fqdn+','+total_co2e+'\\n\\r'}"
-        publish:
-          - list: '${new_string}'
-        navigate:
-          - SUCCESS: list_iterator
     - query_vm_details:
         do:
           io.cloudslang.carbon_footprint_project.azure.query_vm_details:
@@ -199,15 +192,54 @@ flow:
           - total_co2e
         navigate:
           - FAILURE: on_failure
-          - SUCCESS: build_list
+          - SUCCESS: get_ucmdbid
     - set_ip_and_fqdn_to_null:
         do:
-          io.cloudslang.base.utils.do_nothing: []
+          io.cloudslang.base.utils.do_nothing:
+            - input_0: '${server}'
         publish:
-          - ip_address: 'null'
-          - fqdn: 'null'
+          - ip_address: 127.0.0.1
+          - fqdn: '${input_0}'
         navigate:
           - SUCCESS: query_vm_details_1
+          - FAILURE: on_failure
+    - odl_load_data:
+        do:
+          io.cloudslang.carbon_footprint_project.optic_data_lake.odl_load_data:
+            - timestamp: '${timestamp}'
+            - scope2_co2e: '0'
+            - scope3_co2e: '${total_co2e}'
+            - powerusage: '0'
+            - cmdb_id: '${ucmdbid}'
+            - cmdb_global_id: '${global_id}'
+            - node_fqdn: '${fqdn}'
+            - node_ip_address: '${ip_address}'
+            - cloudvendor: Azure
+            - cloudregion: '${location}'
+        publish:
+          - odl_result
+        navigate:
+          - SUCCESS: list_iterator
+          - FAILURE: on_failure
+    - get_ucmdbid:
+        do:
+          io.cloudslang.base.json.json_path_query:
+            - json_object: '${ucmdbids}'
+            - json_path: "${'$.cis[?(@.properties.name== \"'+cs_to_lower(server)+'\")].ucmdbId'}"
+        publish:
+          - ucmdbid: "${return_result.strip('[').strip(']').strip('\"')}"
+        navigate:
+          - SUCCESS: get_global_id
+          - FAILURE: on_failure
+    - get_global_id:
+        do:
+          io.cloudslang.base.json.json_path_query:
+            - json_object: '${ucmdbids}'
+            - json_path: "${'$.cis[?(@.properties.name== \"'+cs_to_lower(server)+'\")].globalId'}"
+        publish:
+          - global_id: "${return_result.strip('[').strip(']').strip('\"')}"
+        navigate:
+          - SUCCESS: odl_load_data
           - FAILURE: on_failure
   outputs:
     - azure_server_list: '${list}'
@@ -222,31 +254,37 @@ extensions:
         'y': 40
       get_vmsize:
         x: 240
-        'y': 240
+        'y': 213
       get_public_network:
         x: 240
-        'y': 440
+        'y': 373
       get_ip_1:
-        x: 440
-        'y': 600
+        x: 412
+        'y': 547
       query_vm_details_1:
-        x: 640
-        'y': 600
+        x: 570
+        'y': 549
       set_ip_and_fqdn_to_null:
-        x: 360
-        'y': 760
+        x: 338
+        'y': 687
       get_network:
-        x: 400
-        'y': 440
+        x: 409
+        'y': 374
       get_pub_ip_and_fqdn:
-        x: 80
-        'y': 600
+        x: 68
+        'y': 553
       azure_vm_instance:
-        x: 880
-        'y': 440
+        x: 906
+        'y': 548
       get_public_interface_id:
-        x: 80
-        'y': 400
+        x: 72
+        'y': 372
+      get_global_id:
+        x: 738
+        'y': 383
+      get_ucmdbid:
+        x: 905
+        'y': 386
       list_iterator:
         x: 600
         'y': 40
@@ -254,32 +292,33 @@ extensions:
           a47cdb3f-74e6-05b8-aac1-5f880a0009b7:
             targetId: c01cab71-dfd0-f554-9dbb-6cda97d840d6
             port: NO_MORE
-      build_list:
-        x: 800
-        'y': 240
       get_ip:
-        x: 240
-        'y': 600
+        x: 246
+        'y': 544
       get_token:
         x: 80
         'y': 40
       query_vm_details:
-        x: 560
-        'y': 440
+        x: 571
+        'y': 379
       http_client_get:
         x: 240
         'y': 40
       get_vmid:
-        x: 560
-        'y': 240
+        x: 567
+        'y': 219
+      odl_load_data:
+        x: 734
+        'y': 215
       translate_azure_regions:
-        x: 840
-        'y': 600
+        x: 740
+        'y': 550
       get_location:
         x: 400
-        'y': 240
+        'y': 216
     results:
       SUCCESS:
         c01cab71-dfd0-f554-9dbb-6cda97d840d6:
-          x: 920
-          'y': 40
+          x: 803
+          'y': 43
+
