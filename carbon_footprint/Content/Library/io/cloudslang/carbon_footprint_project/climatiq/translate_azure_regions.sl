@@ -9,7 +9,8 @@ flow:
           io.cloudslang.base.utils.do_nothing: []
         publish:
           - json_result: |-
-              ${{
+              ${'''
+              {
                   "value" : [
                 {"australia": "australia"},
                 {"australiacentral": "australia_central"},
@@ -69,7 +70,8 @@ flow:
                 {"westus2": "west_us_2"},
                 {"westus3": "west_us_3"}
               ]
-              }}
+              }
+              '''}
         navigate:
           - SUCCESS: map_climatiq_region
           - FAILURE: on_failure
@@ -106,3 +108,4 @@ extensions:
         5d687388-4ea7-e7da-e42f-94256bbab6d3:
           x: 560
           'y': 120
+
