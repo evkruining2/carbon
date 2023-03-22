@@ -9,7 +9,8 @@ flow:
           io.cloudslang.base.utils.do_nothing: []
         publish:
           - json_result: |-
-              ${{
+              ${'''
+              {
                   "value" : [
                 {"af-south-1": "af_south_1"},
                 {"ap-east-1": "ap_east_1"},
@@ -37,7 +38,8 @@ flow:
                 {"us-west-1": "us_west_1"},
                 {"us-west-2": "us_west_2"}
               ]
-              }}
+              }
+              '''}
         navigate:
           - SUCCESS: map_climatiq_region
           - FAILURE: on_failure
@@ -59,6 +61,9 @@ flow:
 extensions:
   graph:
     steps:
+      get_aws_regions:
+        x: 120
+        'y': 120
       map_climatiq_region:
         x: 320
         'y': 120
@@ -66,11 +71,9 @@ extensions:
           65613f40-1869-3d86-125b-b9d47082b831:
             targetId: 5d687388-4ea7-e7da-e42f-94256bbab6d3
             port: SUCCESS
-      get_aws_regions:
-        x: 120
-        'y': 120
     results:
       SUCCESS:
         5d687388-4ea7-e7da-e42f-94256bbab6d3:
           x: 560
           'y': 120
+
