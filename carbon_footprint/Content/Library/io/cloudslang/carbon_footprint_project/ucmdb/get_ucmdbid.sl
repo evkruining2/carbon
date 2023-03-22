@@ -3,10 +3,12 @@ flow:
   name: get_ucmdbid
   inputs:
     - fqdn: esx21.advantageinc.org
+    - topology: DCOE_ESG_ESX
   workflow:
     - get_topology:
         do:
-          io.cloudslang.carbon_footprint_project.ucmdb.get_topology: []
+          io.cloudslang.carbon_footprint_project.ucmdb.get_topology:
+            - topology: '${topology}'
         publish:
           - ucmdbIds
         navigate:
@@ -42,7 +44,7 @@ extensions:
   graph:
     steps:
       get_topology:
-        x: 69
+        x: 68
         'y': 67
       get_ucmdbid:
         x: 69
