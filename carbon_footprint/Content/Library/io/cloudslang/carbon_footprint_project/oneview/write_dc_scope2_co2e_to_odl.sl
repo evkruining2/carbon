@@ -1,15 +1,9 @@
 namespace: io.cloudslang.carbon_footprint_project.oneview
 flow:
   name: write_dc_scope2_co2e_to_odl
+  inputs:
+    - timestamp
   workflow:
-    - create_timestamp_flow:
-        do:
-          io.cloudslang.carbon_footprint_project.tools.create_timestamp_flow: []
-        publish:
-          - timestamp
-        navigate:
-          - SUCCESS: local_dc_co2e
-          - FAILURE: on_failure
     - local_dc_co2e:
         do:
           io.cloudslang.carbon_footprint_project.oneview.subflows.local_dc_co2e:
@@ -27,12 +21,9 @@ flow:
 extensions:
   graph:
     steps:
-      create_timestamp_flow:
-        x: 70
-        'y': 76
       local_dc_co2e:
-        x: 259
-        'y': 79
+        x: 93
+        'y': 85
         navigate:
           e78f9ee0-0df6-12f4-7556-2bc3695fe731:
             targetId: aa243003-4d3d-ce3a-1c71-bf1644cd54fe
@@ -40,6 +31,6 @@ extensions:
     results:
       SUCCESS:
         aa243003-4d3d-ce3a-1c71-bf1644cd54fe:
-          x: 448
-          'y': 78
+          x: 307
+          'y': 88
 
