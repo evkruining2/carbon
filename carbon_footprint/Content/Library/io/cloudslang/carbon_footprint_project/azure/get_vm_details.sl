@@ -239,8 +239,17 @@ flow:
         publish:
           - global_id: "${return_result.strip('[').strip(']').strip('\"')}"
         navigate:
-          - SUCCESS: odl_load_data
+          - SUCCESS: update_ci
           - FAILURE: on_failure
+    - update_ci:
+        do:
+          io.cloudslang.carbon_footprint_project.ucmdb.update_ci:
+            - ucmdb_id: '${ucmdbid}'
+            - scope3: '${total_co2e}'
+            - region: '${location}'
+        navigate:
+          - FAILURE: on_failure
+          - SUCCESS: odl_load_data
   outputs:
     - azure_server_list: '${list}'
   results:
@@ -308,8 +317,11 @@ extensions:
         x: 567
         'y': 219
       odl_load_data:
-        x: 734
-        'y': 215
+        x: 733
+        'y': 225
+      update_ci:
+        x: 900
+        'y': 228
       translate_azure_regions:
         x: 740
         'y': 550
