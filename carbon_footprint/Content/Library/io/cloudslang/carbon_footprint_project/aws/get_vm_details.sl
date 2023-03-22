@@ -71,7 +71,7 @@ flow:
             - json_object: '${json_iterator}'
             - json_path: $.properties.region
         publish:
-          - region: "${cs_replace(return_result,\"-\",\"_\",).strip('\"')}"
+          - region: "${return_result.strip('\"')}"
         navigate:
           - SUCCESS: get_node_model
           - FAILURE: array_iterator
@@ -94,16 +94,7 @@ flow:
           - total_co2e
         navigate:
           - FAILURE: on_failure
-          - SUCCESS: odl_load_data
-    - strip_last_char_from_region:
-        do:
-          io.cloudslang.base.utils.do_nothing:
-            - dirty_region: '${region}'
-        publish:
-          - region: '${dirty_region[:-1]}'
-        navigate:
-          - SUCCESS: aws_vm_instance
-          - FAILURE: on_failure
+          - SUCCESS: update_ci
     - odl_load_data:
         do:
           io.cloudslang.carbon_footprint_project.optic_data_lake.odl_load_data:
@@ -114,7 +105,7 @@ flow:
             - cmdb_id: '${ucmdbid}'
             - cmdb_global_id: '${globalid}'
             - node_fqdn: '${dns}'
-            - node_ip_address: '${dns}'
+            - node_ip_address: '${ip_address}'
             - cloudvendor: AWS
             - cloudregion: '${region}'
         navigate:
@@ -128,16 +119,42 @@ flow:
         publish:
           - ip_address: "${cs_replace(new_string.split('.')[0],\"-\",\".\",)}"
         navigate:
-          - SUCCESS: strip_last_char_from_region
+          - SUCCESS: clean_up_ip_address_2
+    - clean_up_ip_address_2:
+        do:
+          io.cloudslang.base.strings.remove:
+            - origin_string: '${ip_address}'
+            - text: ec2.
+        publish:
+          - ip_address: '${new_string}'
+        navigate:
+          - SUCCESS: translate_aws_regions
+    - update_ci:
+        do:
+          io.cloudslang.carbon_footprint_project.ucmdb.update_ci:
+            - ucmdb_id: '${ucmdbid}'
+            - scope2: '0'
+            - scope3: '${total_co2e}'
+            - power_usage: '0'
+            - region: '${region}'
+        navigate:
+          - FAILURE: on_failure
+          - SUCCESS: odl_load_data
+    - translate_aws_regions:
+        do:
+          io.cloudslang.carbon_footprint_project.climatiq.translate_aws_regions:
+            - aws_region: '${region}'
+        publish:
+          - region
+        navigate:
+          - FAILURE: on_failure
+          - SUCCESS: aws_vm_instance
   results:
     - FAILURE
     - SUCCESS
 extensions:
   graph:
     steps:
-      strip_last_char_from_region:
-        x: 400
-        'y': 440
       json_path_query:
         x: 40
         'y': 80
@@ -147,6 +164,9 @@ extensions:
       clean_up_ip_address:
         x: 200
         'y': 440
+      translate_aws_regions:
+        x: 367
+        'y': 610
       get_display_label:
         x: 40
         'y': 280
@@ -172,6 +192,12 @@ extensions:
       aws_vm_instance:
         x: 560
         'y': 440
+      update_ci:
+        x: 733
+        'y': 308
+      clean_up_ip_address_2:
+        x: 365
+        'y': 449
       get_region:
         x: 400
         'y': 280
@@ -180,3 +206,4 @@ extensions:
         2e9ad66a-d39c-f331-5655-f51850c74aca:
           x: 600
           'y': 80
+
