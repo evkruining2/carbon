@@ -1,15 +1,9 @@
 namespace: io.cloudslang.carbon_footprint_project.aws
 flow:
   name: main_aws_flow
+  inputs:
+    - timestamp
   workflow:
-    - create_timestamp_flow:
-        do:
-          io.cloudslang.carbon_footprint_project.tools.create_timestamp_flow: []
-        publish:
-          - timestamp
-        navigate:
-          - SUCCESS: get_topology
-          - FAILURE: on_failure
     - get_topology:
         do:
           io.cloudslang.carbon_footprint_project.ucmdb.get_topology:
@@ -33,21 +27,19 @@ flow:
 extensions:
   graph:
     steps:
-      create_timestamp_flow:
-        x: 80
-        'y': 80
-      get_topology:
-        x: 280
-        'y': 80
       get_vm_details:
-        x: 480
-        'y': 80
+        x: 272
+        'y': 95
         navigate:
           45f91128-d7f5-4a7a-f041-03274f4addd7:
             targetId: 2c792f2b-0cc0-21c3-0417-685c3a120fd2
             port: SUCCESS
+      get_topology:
+        x: 75
+        'y': 87
     results:
       SUCCESS:
         2c792f2b-0cc0-21c3-0417-685c3a120fd2:
-          x: 480
-          'y': 320
+          x: 477
+          'y': 94
+
