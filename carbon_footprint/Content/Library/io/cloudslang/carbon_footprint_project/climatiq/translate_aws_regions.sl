@@ -20,6 +20,7 @@ flow:
                 {"ap-south-1": "ap_south_1"},
                 {"ap-southeast-1": "ap_southeast_1"},
                 {"ap-southeast-2": "ap_southeast_2"},
+                {"ap-southeast-2c": "ap_southeast_2c"},
                 {"ca-central-1": "ca_central_1"},
                 {"cn-north-1": "cn_north_1"},
                 {"cn-northwest-1": "cn_northwest_1"},
@@ -76,4 +77,3 @@ extensions:
         5d687388-4ea7-e7da-e42f-94256bbab6d3:
           x: 560
           'y': 120
-
