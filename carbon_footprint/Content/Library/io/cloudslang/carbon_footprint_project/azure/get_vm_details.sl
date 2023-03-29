@@ -333,4 +333,3 @@ extensions:
         c01cab71-dfd0-f554-9dbb-6cda97d840d6:
           x: 803
           'y': 43
-
