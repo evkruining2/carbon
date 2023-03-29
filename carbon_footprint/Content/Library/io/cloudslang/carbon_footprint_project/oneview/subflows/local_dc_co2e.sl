@@ -51,7 +51,7 @@ flow:
           - uuid
         navigate:
           - FAILURE: on_failure
-          - SUCCESS: get_server_average_power
+          - SUCCESS: get_server_cpu_utilization
     - get_server_average_power:
         do:
           io.cloudslang.carbon_footprint_project.oneview.subflows.get_server_average_power:
@@ -139,6 +139,7 @@ flow:
             - cmdb_global_id: '${global_id}'
             - node_fqdn: '${serverName}'
             - node_ip_address: '${ip_address}'
+            - cpu_util_avg: '${cpu_utilization}'
         publish:
           - odl_result
         navigate:
@@ -155,6 +156,16 @@ flow:
         navigate:
           - FAILURE: on_failure
           - SUCCESS: odl_load_data
+    - get_server_cpu_utilization:
+        do:
+          io.cloudslang.carbon_footprint_project.oneview.subflows.get_server_cpu_utilization:
+            - server_uuid: '${uuid}'
+            - token: '${token}'
+        publish:
+          - cpu_utilization
+        navigate:
+          - FAILURE: on_failure
+          - SUCCESS: get_server_average_power
   outputs:
     - servers: '${list_of_servers}'
     - date_of_sample: '${date_of_sample}'
@@ -167,27 +178,27 @@ extensions:
   graph:
     steps:
       lookup_ip_address:
-        x: 47
-        'y': 397
+        x: 43
+        'y': 380
       co2e_per_hour:
-        x: 608
-        'y': 392
+        x: 515
+        'y': 377
       co2e_per_24hr:
-        x: 773
-        'y': 394
+        x: 669
+        'y': 376
       watts_to_kwh:
-        x: 218
-        'y': 398
+        x: 201
+        'y': 379
         navigate:
           f5dcd00b-a861-83e7-bd7d-b7fd08d2dea9:
             targetId: 2c11562d-9351-b40b-d55e-e83262175e70
             port: ILLEGAL
       get_ucmdbid:
-        x: 772
-        'y': 217
+        x: 813
+        'y': 285
       get_server_uuid_from_name:
-        x: 215
-        'y': 213
+        x: 350
+        'y': 216
       list_iterator:
         x: 415
         'y': 57
@@ -199,20 +210,23 @@ extensions:
         x: 43
         'y': 210
       kwh_per_24hr:
-        x: 414
-        'y': 394
+        x: 353
+        'y': 377
       get_emission_factors:
         x: 214
         'y': 55
       get_server_names:
         x: 48
         'y': 60
+      get_server_cpu_utilization:
+        x: 196
+        'y': 214
       odl_load_data:
-        x: 400
-        'y': 240
+        x: 513
+        'y': 216
       update_ci:
-        x: 600
-        'y': 239
+        x: 667
+        'y': 218
     results:
       FAILURE:
         2c11562d-9351-b40b-d55e-e83262175e70:
