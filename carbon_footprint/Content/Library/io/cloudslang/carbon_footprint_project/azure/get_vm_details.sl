@@ -225,7 +225,7 @@ flow:
         do:
           io.cloudslang.base.json.json_path_query:
             - json_object: '${ucmdbids}'
-            - json_path: "${'$.cis[?(@.properties.name== \"'+cs_to_lower(server)+'\")].ucmdbId'}"
+            - json_path: "${'$.cis[?(@.properties.cloud_vm_display_name== \"'+server+'\")].ucmdbId'}"
         publish:
           - ucmdbid: "${return_result.strip('[').strip(']').strip('\"')}"
         navigate:
@@ -235,7 +235,7 @@ flow:
         do:
           io.cloudslang.base.json.json_path_query:
             - json_object: '${ucmdbids}'
-            - json_path: "${'$.cis[?(@.properties.name== \"'+cs_to_lower(server)+'\")].globalId'}"
+            - json_path: "${'$.cis[?(@.properties.cloud_vm_display_name== \"'+server+'\")].globalId'}"
         publish:
           - global_id: "${return_result.strip('[').strip(']').strip('\"')}"
         navigate:
@@ -333,3 +333,4 @@ extensions:
         c01cab71-dfd0-f554-9dbb-6cda97d840d6:
           x: 803
           'y': 43
+
