@@ -8,7 +8,7 @@ namespace: io.cloudslang.carbon_footprint_project.climatiq
 flow:
   name: calculate_co2e_cpu
   inputs:
-    - climatiq_url: 'https://beta3.api.climatiq.io'
+    - climatiq_url: 'https://beta4.api.climatiq.io'
     - climatiq_token: Y3Q5BATS8TM2ARKBB18Y8MN95HX1
     - provider: aws
     - region: eu_west_1
@@ -72,3 +72,4 @@ extensions:
         9cf1a507-2d60-db49-5d3c-a6c78597df86:
           x: 480
           'y': 80
+
