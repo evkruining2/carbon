@@ -11,18 +11,8 @@ flow:
         publish:
           - timestamp
         navigate:
-          - SUCCESS: write_dc_scope2_co2e_to_odl
-          - FAILURE: on_failure
-    - write_dc_scope2_co2e_to_odl:
-        worker_group:
-          value: RAS_Operator_Path
-          override: true
-        do:
-          io.cloudslang.carbon_footprint_project.oneview.write_dc_scope2_co2e_to_odl:
-            - timestamp: '${timestamp}'
-        navigate:
-          - FAILURE: on_failure
           - SUCCESS: main_azure_flow
+          - FAILURE: on_failure
     - main_azure_flow:
         worker_group:
           value: RAS_Operator_Path
@@ -52,12 +42,6 @@ extensions:
       create_timestamp_flow:
         x: 69
         'y': 87
-      write_dc_scope2_co2e_to_odl:
-        x: 260
-        'y': 86
-      main_azure_flow:
-        x: 446
-        'y': 87
       main_aws_flow:
         x: 618
         'y': 92
@@ -65,6 +49,9 @@ extensions:
           7fde62fc-7ff6-fdf6-c8c6-f3dd05ec8787:
             targetId: a7328fff-080d-5415-2f87-e0a2893444be
             port: SUCCESS
+      main_azure_flow:
+        x: 446
+        'y': 87
     results:
       SUCCESS:
         a7328fff-080d-5415-2f87-e0a2893444be:
