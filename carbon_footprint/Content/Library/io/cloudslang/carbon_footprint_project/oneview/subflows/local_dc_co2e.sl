@@ -19,6 +19,7 @@ flow:
     - dcoe_scope3_co2e:
         default: '0.9781'
         required: false
+    - co2e_kwh_estimate: '0.408'
   workflow:
     - get_server_names:
         do:
@@ -31,7 +32,7 @@ flow:
               timestamp,co2e,powerUsage,cmdb_id,cmdb_global_id,node_fqdn,node_ip
         navigate:
           - FAILURE: on_failure
-          - SUCCESS: get_emission_factors
+          - SUCCESS: list_iterator
     - list_iterator:
         do:
           io.cloudslang.base.lists.list_iterator:
@@ -64,18 +65,10 @@ flow:
         navigate:
           - FAILURE: on_failure
           - SUCCESS: lookup_ip_address
-    - get_emission_factors:
-        do:
-          io.cloudslang.carbon_footprint_project.climatiq.get_emission_factors: []
-        publish:
-          - co2e_kwh
-        navigate:
-          - FAILURE: on_failure
-          - SUCCESS: list_iterator
     - co2e_per_hour:
         do:
           io.cloudslang.base.math.multiply_numbers:
-            - value1: '${co2e_kwh}'
+            - value1: '${co2e_kwh_estimate}'
             - value2: '${number}'
         publish:
           - number: '${result}'
@@ -212,9 +205,6 @@ extensions:
       kwh_per_24hr:
         x: 353
         'y': 377
-      get_emission_factors:
-        x: 214
-        'y': 55
       get_server_names:
         x: 48
         'y': 60
