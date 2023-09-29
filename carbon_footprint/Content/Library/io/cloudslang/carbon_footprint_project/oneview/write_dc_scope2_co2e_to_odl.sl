@@ -3,11 +3,13 @@ flow:
   name: write_dc_scope2_co2e_to_odl
   inputs:
     - timestamp
+    - co2e_kwh_estimate: '0.408'
   workflow:
     - local_dc_co2e:
         do:
           io.cloudslang.carbon_footprint_project.oneview.subflows.local_dc_co2e:
             - timestamp: '${timestamp}'
+            - co2e_kwh_estimate: '${co2e_kwh_estimate}'
         publish:
           - date_of_sample
         navigate:
