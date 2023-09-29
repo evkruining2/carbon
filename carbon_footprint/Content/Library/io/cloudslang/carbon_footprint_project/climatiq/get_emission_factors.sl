@@ -7,9 +7,11 @@ namespace: io.cloudslang.carbon_footprint_project.climatiq
 flow:
   name: get_emission_factors
   inputs:
-    - climatiq_url: 'https://beta3.api.climatiq.io'
+    - climatiq_url: 'https://beta4.api.climatiq.io'
     - climatiq_token: Y3Q5BATS8TM2ARKBB18Y8MN95HX1
     - provider_uuid: 0bd33651-72bd-4b1d-ad84-8cacaf574b5e
+    - activity_id: electricity-supply_grid-source_supplier_mix
+    - data_version: '5.5'
   workflow:
     - get_climatiq_io_provider_emission_factor:
         worker_group:
@@ -21,7 +23,7 @@ flow:
             - proxy_host: "${get_sp('io.cloudslang.carbon_footprint_project.proxy_host')}"
             - proxy_port: "${get_sp('io.cloudslang.carbon_footprint_project.proxy_port')}"
             - headers: "${'Authorization: Bearer '+climatiq_token}"
-            - body: "${'{'+\\\n'\"emission_factor\": {'+\\\n'\"uuid\": \"'+provider_uuid+'\"},'+\\\n'\"parameters\": {'+\\\n'\"energy\": 1,'+\\\n'\"energy_unit\": \"kWh\"'+\\\n'}}'}"
+            - body: "${'{'+\\\n'\"emission_factor\": {'+\\\n'\"activity_id\": \"'+activity_id+'\",'+\\\n'\"data_version\": \"'+data_version+'\"},'+\\\n'\"parameters\": {'+\\\n'\"energy\": 1,'+\\\n'\"energy_unit\": \"kWh\"'+\\\n'}}'}"
         publish:
           - json_result: '${return_result}'
         navigate:
@@ -60,3 +62,4 @@ extensions:
         80d43498-370b-fc7c-6abf-e015e4d2314f:
           x: 221
           'y': 90
+
