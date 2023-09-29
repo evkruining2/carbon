@@ -2,7 +2,7 @@ namespace: io.cloudslang.carbon_footprint_project.climatiq
 flow:
   name: aws_vm_instance
   inputs:
-    - climatiq_url: 'https://beta3.api.climatiq.io/compute/aws/instance'
+    - climatiq_url: 'https://beta4.api.climatiq.io/compute/aws/instance'
     - climatiq_token: Y3Q5BATS8TM2ARKBB18Y8MN95HX1
     - region: eu_west_1
     - instance: c3.8xlarge
@@ -51,3 +51,4 @@ extensions:
         42fa9c5b-b02f-6be0-0a07-ee2671b4fd8c:
           x: 480
           'y': 80
+
